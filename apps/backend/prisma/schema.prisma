@@ -1,0 +1,186 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String?  @unique
+  name      String   @default("Usuário")
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  threads   Thread[]
+}
+
+model Workspace {
+  id                String      @id @default(cuid())
+  name              String
+  color             String      @default("#f97316")
+  databaseName      String      @unique
+  uploadBucket      String      @unique
+  contextBucket     String      @unique
+  status            String      @default("PROVISIONING")
+  provisioningError String?
+  threads           Thread[]
+  events            ChatEvent[]
+  agents            Agent[]
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@index([status, createdAt])
+}
+
+model Agent {
+  id           String    @id @default(cuid())
+  workspaceId  String
+  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  name         String
+  description  String
+  instructions String
+  model        String
+  tools        String[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([workspaceId, createdAt])
+}
+
+model Thread {
+  id             String          @id @default(cuid())
+  title          String          @default("Nova Conversa")
+  model          String          @default("gpt-4o")
+  workspaceId    String
+  workspace      Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  userId         String?
+  user           User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages       Message[]
+  events         ChatEvent[]
+  uploadSessions UploadSession[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([workspaceId, updatedAt])
+}
+
+model Message {
+  id          String           @id @default(cuid())
+  threadId    String
+  thread      Thread           @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  sender      String // 'user' | 'assistant' | 'system'
+  content     String
+  model       String?
+  isStreaming Boolean          @default(false)
+  attachments Attachment[]
+  audio       AudioAttachment?
+  uploads     UploadSession[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  messageId String
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  name      String
+  size      BigInt
+  type      String
+  url       String?
+  createdAt DateTime @default(now())
+}
+
+model AudioAttachment {
+  id              String   @id @default(cuid())
+  messageId       String   @unique
+  message         Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  url             String
+  durationSeconds Float    @default(0)
+  createdAt       DateTime @default(now())
+}
+
+model UploadSession {
+  id                String         @id @default(cuid())
+  threadId          String
+  thread            Thread         @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  messageId         String?
+  message           Message?       @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  objectKey         String         @unique
+  name              String
+  size              BigInt
+  type              String
+  mode              UploadMode     @default(SINGLE)
+  category          UploadCategory @default(DOCUMENT)
+  status            UploadStatus   @default(PENDING)
+  multipartUploadId String?
+  partSize          BigInt?
+  partCount         Int?
+  expiresAt         DateTime
+  completedAt       DateTime?
+  attachedAt        DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([threadId, status])
+  @@index([status, expiresAt])
+  @@index([messageId])
+}
+
+enum UploadMode {
+  SINGLE
+  MULTIPART
+}
+
+enum UploadCategory {
+  DOCUMENT
+  MEDIA
+}
+
+enum UploadStatus {
+  PENDING
+  COMPLETING
+  COMPLETED
+  ATTACHED
+  DELETING
+}
+
+model StorageDeletionTask {
+  id                String                @id @default(cuid())
+  workspaceId       String
+  bucket            String
+  objectKey         String
+  multipartUploadId String?
+  status            StorageDeletionStatus @default(PENDING)
+  attempts          Int                   @default(0)
+  nextAttemptAt     DateTime              @default(now())
+  lastError         String?
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  @@unique([bucket, objectKey])
+  @@index([status, nextAttemptAt])
+  @@index([workspaceId, status, nextAttemptAt])
+}
+
+enum StorageDeletionStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+}
+
+model ChatEvent {
+  id          String     @id @default(cuid())
+  type        String // 'status' | 'notification' | 'system' | 'ping'
+  title       String?
+  message     String
+  workspaceId String?
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  threadId    String?
+  thread      Thread?    @relation(fields: [threadId], references: [id], onDelete: SetNull)
+  payload     Json?
+  createdAt   DateTime   @default(now())
+
+  @@index([workspaceId, createdAt])
+}

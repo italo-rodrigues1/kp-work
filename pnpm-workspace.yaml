@@ -1,0 +1,8 @@
+packages:
+  - apps/agent-timeline
+  - apps/backend
+  - apps/frontend
+allowBuilds:
+  '@prisma/engines': true
+  prisma: true
+  unrs-resolver: true

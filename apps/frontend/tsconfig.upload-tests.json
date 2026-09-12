@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "allowImportingTsExtensions": false,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noEmit": false,
+    "outDir": "./.tmp/upload-tests",
+    "rootDir": ".",
+    "tsBuildInfoFile": "./.tmp/tsconfig.upload-tests.tsbuildinfo",
+    "types": ["node"]
+  },
+  "include": [
+    "src/hooks/fileUploadCore.ts",
+    "src/hooks/webSocketChatCore.ts",
+    "tests/**/*.ts"
+  ]
+}
