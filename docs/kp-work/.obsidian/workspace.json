@@ -11,10 +11,12 @@
             "id": "bbb075d70db2c022",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
-              "icon": "lucide-file",
-              "title": "New tab"
+              "type": "excalidraw",
+              "state": {
+                "file": "System Design/Design.excalidraw.md"
+              },
+              "icon": "excalidraw-icon",
+              "title": "Design.excalidraw"
             }
           }
         ]
@@ -173,22 +175,27 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "obsidian-excalidraw-plugin:New drawing": false,
-      "obsidian-git:Open Git source control": false,
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
       "canvas:Create new canvas": false,
       "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
-      "bases:Create new base": false
+      "bases:Create new base": false,
+      "obsidian-excalidraw-plugin:New drawing": false,
+      "obsidian-git:Open Git source control": false
     }
   },
-  "active": "bbb075d70db2c022",
+  "active": "682b63b75447a460",
   "lastOpenFiles": [
+    "System Design/Design.excalidraw.md",
     "Excalidraw/Drawing 2026-09-12 11.11.35.excalidraw.md",
-    "Excalidraw",
     "System Design/Untitled.md",
+    "Requisitos Funcionas e não funcionais.md",
+    "Sprints.md",
+    "Features.md",
+    "Project.md",
+    "Excalidraw",
     "System Design",
     "Sandbox",
     "Workers/document-reader",

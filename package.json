@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "install:node": "",
+    "install:python": "",
+    "install:all": "pnpm install:node && pnpm install:python",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",

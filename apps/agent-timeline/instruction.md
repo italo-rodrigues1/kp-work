@@ -1,4 +1,4 @@
-1- python -m venv venv
-.\venv\Scripts\Activate.ps1
-2- pip install -r requirements.txt
-3- python main.py
+# 1- python -m venv venv
+# 2- .\venv\Scripts\Activate.ps1
+# 3- pip install -r requirements.txt
+# 4- python main.py
